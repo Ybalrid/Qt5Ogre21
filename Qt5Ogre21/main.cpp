@@ -7,7 +7,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    new QtOgre21();
+    //U <3 RAII
+    auto qtOgre { std::make_unique<QtOgre21>(QtOgre21::RenderAPI::OpenGL) };
 
     QOgreViewport w;
     w.show();
