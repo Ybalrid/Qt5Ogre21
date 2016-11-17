@@ -14,6 +14,15 @@
 #include <OGRE/Ogre.h>
 #include <OGRE/Compositor/OgreCompositorManager2.h>
 #include <OGRE/Compositor/OgreCompositorWorkspace.h>
+#include <OGRE/OgreMeshManager2.h>
+#include <OGRE/OgreMeshManager.h>
+#include <OGRE/OgreMesh2.h>
+#include <OGRE/OgreMesh.h>
+#include <OGRE/OgreItem.h>
+#include <OGRE/OgreHlms.h>
+#include <OGRE/OgreHlmsManager.h>
+#include <OGRE/Hlms/Pbs/OgreHlmsPbs.h>
+#include <OGRE/Hlms/Unlit/OgreHlmsUnlit.h>
 
 class QtOgre21
 {
@@ -28,10 +37,13 @@ public:
     static QtOgre21* instance();
 
     Ogre::MeshPtr loadFromV1Mesh(Ogre::v1::MeshPtr v1Mesh);
+    Ogre::MeshPtr loadFromV1Mesh(Ogre::String name);
 
     Ogre::SceneManager* getScene(size_t index);
 
     std::tuple<Ogre::SceneManager*, Ogre::Camera*, Ogre::CompositorWorkspace*, Ogre::IdString >WidgetCreatedCallback(Ogre::RenderWindow* virtualWindow);
+
+    void declareHlmsLibrary(const Ogre::String&& path);
 
 private:
 

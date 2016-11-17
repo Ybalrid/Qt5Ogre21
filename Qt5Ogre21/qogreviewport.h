@@ -18,12 +18,16 @@ public:
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void moveEvent(QMoveEvent *event) override;
 
+    Ogre::Camera* getCamera();
+
     ~QOgreViewport();
 
 private:
     Ogre::RenderWindow* Window;
     Ogre::Camera* Camera;
     Ogre::SceneManager* SceneManager;
+
+    static size_t windowNumber;
 };
 
 #endif // QOGREVIEWPORT_H

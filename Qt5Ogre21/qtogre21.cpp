@@ -86,3 +86,54 @@ QtOgre21* QtOgre21::instance()
 {
     return self;
 }
+
+Ogre::MeshPtr QtOgre21::loadFromV1Mesh(Ogre::String name)
+{
+    return loadFromV1Mesh(Ogre::v1::MeshManager::getSingleton().load
+                          (name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+                           Ogre::v1::HardwareBuffer::HBU_STATIC, Ogre::v1::HardwareBuffer::HBU_STATIC ));
+}
+
+Ogre::MeshPtr QtOgre21::loadFromV1Mesh(Ogre::v1::MeshPtr v1Mesh)
+{
+    Ogre::MeshPtr v2Mesh;
+    v2Mesh = Ogre::MeshManager::getSingletonPtr()->createManual(v1Mesh->getName() + "v2",
+                                                                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+    v2Mesh->importV1(v1Mesh.get(), true, true, true);
+    v1Mesh->unload();
+    v1Mesh.setNull();
+
+    return v2Mesh;
+}
+
+Ogre::SceneManager* QtOgre21::getScene(size_t index)
+{
+    if(index < scenes.size())
+        return scenes[index];
+    return nullptr;
+}
+
+void QtOgre21::declareHlmsLibrary(const Ogre::String&& path)
+{
+    Ogre::String hlmsFolder = path;
+
+    if(hlmsFolder.empty()) hlmsFolder =  "./";
+    else if (hlmsFolder[hlmsFolder.size() - 1] != '/') hlmsFolder += "/";
+
+    auto hlmsManager = Ogre::Root::getSingleton().getHlmsManager();
+
+    //Define the shader library to use for HLMS
+    auto library = Ogre::ArchiveVec();
+    auto archiveLibrary = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Common/" + shadingLanguage, "FileSystem", true);
+    library.push_back(archiveLibrary);
+
+    //Define "unlit" and "PBS" (physics based shader) HLMS
+    auto archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Unlit/" + shadingLanguage, "FileSystem", true);
+    auto archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Pbs/" + shadingLanguage, "FileSystem", true);
+    auto hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit, &library);
+    auto hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &library);
+    hlmsManager->registerHlms(hlmsUnlit);
+    hlmsManager->registerHlms(hlmsPbs);
+
+}
