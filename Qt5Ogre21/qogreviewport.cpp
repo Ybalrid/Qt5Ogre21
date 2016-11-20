@@ -19,6 +19,7 @@ QOgreViewport::QOgreViewport(size_t SceneManagerIndex, QWidget *parent)
 
     //Confirugation for Ogre
     Ogre::NameValuePairList misc;
+    misc["FSAA"] = std::to_string(QtOgre21::instance()->getAALevel());
     misc["vsync"] = "false";
     misc["externalWindowHandle"] = std::to_string(winId());
     QtOgre21::instance()->willCreateWindowHint();

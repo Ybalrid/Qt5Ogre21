@@ -10,7 +10,8 @@ size_t QtOgre21::workspaceCounter(0);
 QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     root{ nullptr },
     glContext{ 0 },
-    hlmsPath{ HlmsLibraryPath }
+    hlmsPath{ HlmsLibraryPath },
+    AALevel{ 8 }
 {
     if(self)
         throw std::runtime_error("Cannot instanciate 2 QtOgre21 objects. This is a singleton class.");
@@ -175,4 +176,14 @@ QtOgre21::RenderAPI QtOgre21::getAPI()
 void QtOgre21::logToOgre(string message)
 {
     Ogre::LogManager::getSingleton().logMessage(message);
+}
+
+void QtOgre21::setAALevel(uint8_t AA)
+{
+    AALevel = AA;
+}
+
+uint8_t QtOgre21::getAALevel()
+{
+    return AALevel;
 }

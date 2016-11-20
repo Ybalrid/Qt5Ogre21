@@ -7,10 +7,11 @@
 
 int main(int argc, char *argv[])
 {
+    //Initialize the Qt Application
     QApplication a(argc, argv);
 
-    //U <3 RAII
-    auto qtOgre { std::make_unique<QtOgre21>(QtOgre21::RenderAPI::OpenGL) };
+    //Initialize the QtOgre system
+    QtOgre21 qtOgre(QtOgre21::RenderAPI::OpenGL);
 
     //Create the widget
     SomeCustomWidget widget; widget.show();
@@ -21,14 +22,14 @@ int main(int argc, char *argv[])
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(".", "FileSystem");
 
     //HighLevelMaterialSystem shader libraries
-    qtOgre->declareHlmsLibrary();
+    qtOgre.declareHlmsLibrary();
 
     //Initialize the resources
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     //Setup 1st scene (that is in 1st widget
-    auto scene = qtOgre->getScene(0);
-    auto suzanneItem = scene->createItem(qtOgre->loadFromV1Mesh("Suzanne.mesh"));
+    auto scene = qtOgre.getScene(0);
+    auto suzanneItem = scene->createItem(qtOgre.loadFromV1Mesh("Suzanne.mesh"));
     auto suzanneNode = scene->getRootSceneNode()->createChildSceneNode();
     suzanneNode->attachObject(suzanneItem);
     auto sunlight = scene->createLight();
@@ -41,8 +42,8 @@ int main(int argc, char *argv[])
     Camera->setPosition(0, 1, 3.5f);
 
     //Setup 2nd scene (2nd widget)
-    auto scene2 = qtOgre->getScene(1);
-    auto knotItem = scene2->createItem(qtOgre->loadFromV1Mesh("knot.mesh"));
+    auto scene2 = qtOgre.getScene(1);
+    auto knotItem = scene2->createItem(qtOgre.loadFromV1Mesh("knot.mesh"));
     auto knotNode = scene2->getRootSceneNode()->createChildSceneNode();
     knotNode->attachObject(knotItem);
     knotNode->setScale(0.01f, 0.01f, 0.01f);
@@ -52,11 +53,10 @@ int main(int argc, char *argv[])
     sunlight2->setType(Ogre::Light::LT_DIRECTIONAL);
     sunlight2->setDirection(Ogre::Vector3(-1, -1, -0.5f).normalisedCopy());
     sunlight2->setPowerScale(Ogre::Math::PI);
-
     auto Camera2 = w2->getCamera();
     Camera2->setPosition(0, 3, 0);
-    //turn the camera by hand:
-    Camera2->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3::UNIT_X));
+    Camera2->setOrientation(Ogre::Quaternion(Ogre::Degree(-90),
+                                             Ogre::Vector3::UNIT_X));
 
     return a.exec();
 }

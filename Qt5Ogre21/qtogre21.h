@@ -68,9 +68,19 @@ public:
     ///Declare to the engine the location of the HLMS library
     void declareHlmsLibrary();
 
+    ///Write a message to Ogre's log
     static void logToOgre(std::string message);
 
+    ///Set the AA level
+    void setAALevel(uint8_t AA);
+
+    ///Get the AA level
+    uint8_t getAALevel();
+
 private:
+
+    ///The AA level
+    uint8_t AALevel;
 
     ///Singleton pointer
     static QtOgre21* self;
