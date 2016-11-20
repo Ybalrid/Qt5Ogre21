@@ -12,14 +12,18 @@ int main(int argc, char *argv[])
     //U <3 RAII
     auto qtOgre { std::make_unique<QtOgre21>(QtOgre21::RenderAPI::OpenGL) };
 
+    //Create the widget
     SomeCustomWidget widget; widget.show();
     auto w = widget.w;
     auto w2 = widget.w2;
 
+    //Resource locations
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(".", "FileSystem");
 
-    qtOgre->declareHlmsLibrary("HLMS");
+    //HighLevelMaterialSystem shader libraries
+    qtOgre->declareHlmsLibrary();
 
+    //Initialize the resources
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     //Setup 1st scene (that is in 1st widget

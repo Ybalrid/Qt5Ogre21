@@ -66,33 +66,43 @@ public:
     HGLRC getContext();
 
     ///Declare to the engine the location of the HLMS library
-    void declareHlmsLibrary(const Ogre::String&& path);
+    void declareHlmsLibrary();
 
     static void logToOgre(std::string message);
 
 private:
 
+    ///Singleton pointer
     static QtOgre21* self;
 
-    bool rendersystemReady;
-
+    ///Name of the SL to use (for finding the correct HLMS to use)
     Ogre::String shadingLanguage;
 
+    ///Smart pointer to the Ogre::Root, for automatic Ogre cleanup
     std::unique_ptr<Ogre::Root> root;
 
+    ///Name of the OpenGL RenderSystem
     static constexpr const char* const GL3PLUS_RENDERSYSTEM{ "OpenGL 3+ Rendering Subsystem" };
+
+    ///Name of the DirectX 11 RenderSystem
     static constexpr const char* const DIREXTX11_RENDERSYSTEM{ "Direct3D11 Rendering Subsystem" };
 
+    ///Number of threads the SMGRs will use to traverse and cull the geometry
     uint8_t threads;
 
+    ///List of the scenes to use
     std::vector<Ogre::SceneManager*> scenes;
 
+    ///Static counters for uniques names
     static size_t cameraCounter, workspaceCounter;
 
+    ///The API we were requested to use.
     RenderAPI usedAPI;
 
+    ///Windows OpenGL context
     HGLRC glContext;
 
+    ///Path to the HLMS library folder
     std::string hlmsPath;
 
 };

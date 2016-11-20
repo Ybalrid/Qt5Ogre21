@@ -9,7 +9,6 @@ size_t QtOgre21::workspaceCounter(0);
 
 QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     root{ nullptr },
-    rendersystemReady{ false },
     glContext{ 0 },
     hlmsPath{ HlmsLibraryPath }
 {
@@ -127,9 +126,9 @@ Ogre::SceneManager* QtOgre21::getScene(size_t index)
     return nullptr;
 }
 
-void QtOgre21::declareHlmsLibrary(const Ogre::String&& path)
+void QtOgre21::declareHlmsLibrary()
 {
-    Ogre::String hlmsFolder = path;
+    Ogre::String hlmsFolder = hlmsPath;
 
     if(hlmsFolder.empty()) hlmsFolder =  "./";
     else if (hlmsFolder[hlmsFolder.size() - 1] != '/') hlmsFolder += "/";
@@ -138,12 +137,12 @@ void QtOgre21::declareHlmsLibrary(const Ogre::String&& path)
 
     //Define the shader library to use for HLMS
     auto library = Ogre::ArchiveVec();
-    auto archiveLibrary = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Common/" + shadingLanguage, "FileSystem", true);
+    auto archiveLibrary = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Common/" + shadingLanguage, "FileSystem", true);
     library.push_back(archiveLibrary);
 
     //Define "unlit" and "PBS" (physics based shader) HLMS
-    auto archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Unlit/" + shadingLanguage, "FileSystem", true);
-    auto archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(hlmsFolder + "Hlms/Pbs/" + shadingLanguage, "FileSystem", true);
+    auto archiveUnlit = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Unlit/" + shadingLanguage, "FileSystem", true);
+    auto archivePbs = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Pbs/" + shadingLanguage, "FileSystem", true);
     auto hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit, &library);
     auto hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &library);
     hlmsManager->registerHlms(hlmsUnlit);
@@ -155,8 +154,12 @@ void QtOgre21::willCreateWindowHint()
 {
     if(workspaceCounter == 0) return;
     //Here one window has allready been created
+#ifdef _WIN32
     if(usedAPI == RenderAPI::OpenGL)
         glContext = wglGetCurrentContext();
+    else
+#endif
+    glContext = nullptr;
 }
 
 HGLRC QtOgre21::getContext()
