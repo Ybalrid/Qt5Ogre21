@@ -1,6 +1,8 @@
 # Qt5Ogre21
 Qt 5 integration of Ogre 2.1
 
+![Screenshot](/Screenshot.png)
+
 The goal is to have multiple viewports of Ogre either running separate or multiple different scenes.
 
 Design idea

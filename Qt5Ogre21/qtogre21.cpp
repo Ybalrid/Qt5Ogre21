@@ -53,7 +53,6 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     //Store the singleton address
     self = this;
     usedAPI = API;
-
 }
 
 void QtOgre21::createNewScene()
@@ -148,7 +147,6 @@ void QtOgre21::declareHlmsLibrary()
     auto hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &library);
     hlmsManager->registerHlms(hlmsUnlit);
     hlmsManager->registerHlms(hlmsPbs);
-
 }
 
 void QtOgre21::willCreateWindowHint()
