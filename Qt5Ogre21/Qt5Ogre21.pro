@@ -33,13 +33,16 @@ CONFIG(debug, debug|release) {
     win32:LIBS += $$OGRELIBPATH\\release\\OgreHlmsPbs.lib
     win32:LIBS += $$OGRELIBPATH\\release\\OgreHlmsUnlit.lib
 }
+    win32:LIBS += opengl32.lib
 
 
 
 
 SOURCES += main.cpp\
         qogreviewport.cpp \
-    qtogre21.cpp
+    qtogre21.cpp \
+    somecustomwidget.cpp
 
 HEADERS  += qogreviewport.h \
-    qtogre21.h
+    qtogre21.h \
+    somecustomwidget.h

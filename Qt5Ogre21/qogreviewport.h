@@ -10,7 +10,7 @@ class QOgreViewport : public QWidget
     Q_OBJECT
 
 public:
-    QOgreViewport(QWidget *parent = 0);
+    QOgreViewport(size_t SceneManagerIndex = 0, QWidget *parent = 0);
 
     QPaintEngine* paintEngine() const {return nullptr;}
 
@@ -18,16 +18,24 @@ public:
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void moveEvent(QMoveEvent *event) override;
 
+    void changeBackgroundColor(Ogre::ColourValue c);
+
     Ogre::Camera* getCamera();
+    Ogre::SceneManager* getSmgr();
 
     ~QOgreViewport();
-
 private:
+    static size_t windowNumber;
+    size_t smgrIndex;
+
+protected:
     Ogre::RenderWindow* Window;
     Ogre::Camera* Camera;
     Ogre::SceneManager* SceneManager;
+    Ogre::CompositorWorkspace* Workspace;
+    Ogre::IdString WorkspaceDefName;
 
-    static size_t windowNumber;
+
 };
 
 #endif // QOGREVIEWPORT_H
