@@ -15,7 +15,16 @@ Design idea
  
 Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in place, like the runtime convertion of v1 .mesh `MeshSerializer` objects to the new .mesh format. 
 
-## Easy integratio of Ogre2 into a Qt project
+## How to use
+
+Create an instance of the QtOgre21 object along side your QApplication. If you don't you can't create QOgreViewport widgets.
+
+Use QOgreViewport widgets as any other widget in Qt. You can have different scenes. Creating a new scene is done via the QtOgre21 object.
+
+This object is a singleton class, you can access it via calling `QtOgre21::instance()`
+
+
+## Easy integration of Ogre2 into a Qt project
 
 Setting a variable and including a ".pri" file in your main .pro and use Qt's own build system (QMake)
 
