@@ -28,8 +28,6 @@ public:
     ///When the widget is moved
     virtual void moveEvent(QMoveEvent *event) override;
 
-    void changeBackgroundColor(Ogre::ColourValue c);
-
     ///Return the camera used
     Ogre::Camera* getCamera();
 

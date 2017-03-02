@@ -104,6 +104,3 @@ Ogre::SceneManager* QOgreViewport::getSmgr()
     return SceneManager;
 }
 
-void QOgreViewport::changeBackgroundColor(Ogre::ColourValue c)
-{
-}
