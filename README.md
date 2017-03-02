@@ -26,7 +26,7 @@ This object is a singleton class, you can access it via calling `QtOgre21::insta
 
 ## Easy integration of Ogre2 into a Qt project
 
-Setting a variable and including a ".pri" file in your main .pro and use Qt's own build system (QMake)
+Setting a variable and including a ".pri" (TODO it's not done yet. You can get the classes and the .pro configs by hand) file in your main .pro and use Qt's own build system (QMake)
 
 Running on Windows and/or linux easily
 
