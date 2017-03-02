@@ -1,2 +1,6 @@
 *.glsl linguist-vendored
 *.hlsl linguist-vendored
+*.metal liguist-vendored
+*.compositor linguist-vendored
+*.material linguist-vendored
+*.material.json linguist-vendored
