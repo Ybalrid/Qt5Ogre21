@@ -12,7 +12,12 @@ SomeCustomWidget::SomeCustomWidget(QWidget *parent) : QWidget(parent)
     QtOgre21::instance()->createNewScene();
     w2 = new QOgreViewport(1);
 
-    mainLayout->addWidget(w);
-    mainLayout->addWidget(w2);
+    mainLayout->addWidget(w, 0);
+    mainLayout->addWidget(w2, 0);
+
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setMargin(0);
+    mainLayout->setSpacing(0);
+
     setLayout(mainLayout);
 }
