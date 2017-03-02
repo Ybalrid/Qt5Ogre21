@@ -27,7 +27,9 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     qDebug() << "Init of Ogre for Qt5...\n";
 
     //Initialize Ogre Root
-    root = make_unique<Ogre::Root>("plugin.cfg", "ogre.cfg", "ogre.log");
+    root = make_unique<Ogre::Root>("", "ogre.cfg", "ogre.log");
+
+
 
     Ogre::RenderSystem* renderSystem;
 
@@ -36,15 +38,27 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     {
     case RenderAPI::OpenGL:
         qDebug() << "Rendering with OpenGL. Will use GLSL shaders";
+#ifdef QT_DEBUG
+        root->loadPlugin("RenderSystem_GL3Plus_d");
+#else
+        root->loadPlugin("RenderSystemGL3Plus");
+#endif
         renderSystem = root->getRenderSystemByName(GL3PLUS_RENDERSYSTEM);
         shadingLanguage = "GLSL";
         break;
     case RenderAPI::DirectX11:
         qDebug() << "Rendering with DirectX11. Will use HLSL shaders";
+#ifdef QT_DEBUG
+        //Load D3D11 plugin_d here
+#else
+        //Load D3D11 plugin here
+#endif
         renderSystem = root->getRenderSystemByName(DIREXTX11_RENDERSYSTEM);
         shadingLanguage = "HLSL";
         break;
     }
+
+    if(!renderSystem) throw std::runtime_error("Render System is NULLPTR");
 
     root->setRenderSystem(renderSystem);
     renderSystem->setConfigOption("sRGB Gamma Conversion", "Yes");
@@ -78,9 +92,11 @@ QtOgre21::WidgetCreatedCallback(Ogre::RenderWindow *virtualWindow, size_t sceneI
     Ogre::Camera* camera = smgr->createCamera("MyCamera" + std::to_string(cameraCounter++));
 
     auto compositorManager = root->getCompositorManager2();
-    Ogre::IdString workspaceName { "MyWorkspace" + std::to_string(workspaceCounter)};
+
+    Ogre::String workspaceNameStr {"MyWorkspace" + std::to_string(workspaceCounter)};
+    Ogre::IdString workspaceName { workspaceNameStr };
     if(!compositorManager->hasWorkspaceDefinition(workspaceName))
-        compositorManager->createBasicWorkspaceDef(workspaceName, Ogre::ColourValue(0.2f, 0.3f, 0.4f)); //here I set a background color. The thing I would like to change later.
+        compositorManager->createBasicWorkspaceDef(workspaceNameStr, Ogre::ColourValue(0.2f, 0.3f, 0.4f)); //here I set a background color. The thing I would like to change later.
     auto workspace = compositorManager->addWorkspace(smgr, virtualWindow, camera, workspaceName, true, workspaceCounter++);
 
     //if(workspaceCounter == 0) declareHlmsLibrary(hlmsPath.c_str());
