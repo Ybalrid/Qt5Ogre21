@@ -52,6 +52,7 @@ QOgreViewport::QOgreViewport(size_t SceneManagerIndex, QWidget *parent)
     Camera->setFarClipDistance(500);
     Camera->setPosition(0, 0, 10);
     Camera->lookAt(0, 0, 0);
+    //Camera->setFOVy(Ogre::Degree(45));
     Camera->setAutoAspectRatio(true);
 }
 

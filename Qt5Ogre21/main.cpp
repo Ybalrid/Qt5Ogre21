@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     sunlight->setPowerScale(Ogre::Math::PI);
     auto Camera = w->getCamera();
     Camera->setPosition(0, 1, 3.5f);
+    Camera->setAutoAspectRatio(true);
 
     //Setup 2nd scene (2nd widget)
     auto scene2 = qtOgre.getScene(1);
@@ -54,9 +55,11 @@ int main(int argc, char *argv[])
     sunlight2->setDirection(Ogre::Vector3(-1, -1, -0.5f).normalisedCopy());
     sunlight2->setPowerScale(Ogre::Math::PI);
     auto Camera2 = w2->getCamera();
-    Camera2->setPosition(0, 3, 0);
+    Camera2->setPosition(0, 2.5, 0);
     Camera2->setOrientation(Ogre::Quaternion(Ogre::Degree(-90),
                                              Ogre::Vector3::UNIT_X));
+    Camera2->setAutoAspectRatio(true);
+
 
     return a.exec();
 }
