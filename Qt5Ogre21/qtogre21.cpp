@@ -49,9 +49,9 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     case RenderAPI::DirectX11:
         qDebug() << "Rendering with DirectX11. Will use HLSL shaders";
 #ifdef QT_DEBUG
-        //Load D3D11 plugin_d here
+        root->loadPlugin("RenderSystem_DX11_d");
 #else
-        //Load D3D11 plugin here
+        root->loadPlugin("RenderSystem_DX11");
 #endif
         renderSystem = root->getRenderSystemByName(DIREXTX11_RENDERSYSTEM);
         shadingLanguage = "HLSL";
