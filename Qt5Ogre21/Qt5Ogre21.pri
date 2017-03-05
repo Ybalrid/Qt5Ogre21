@@ -1,3 +1,6 @@
+
+message("The .pri for QtOgre has been found!");
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2016-11-16T12:28:05
@@ -5,20 +8,26 @@
 # For Qt5 and up only
 #-------------------------------------------------
 
-QT       += core gui widgets
+#QT       += core gui widgets
 
-TARGET = Qt5Ogre21
-TEMPLATE = app
+#TARGET = Qt5Ogre21
+#TEMPLATE = app
 
-CONFIG += c++14 precompile_header
+#CONFIG += c++14 precompile_header
 
 #VARIABLE TO BE SET BY THE USER WITH PATH TO THE OGRE SDK
-OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
+#OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
+
+message("Ogre21 SDK is $$OGRE21SDK");
+
 
 OGRELIBPATH = $$OGRE21SDK\\lib\\
 
+
 #include QtOgre pri here
 #for now we're doing this by hand
+
+INCLUDEPATH += $$QTOGRE
 
 win32:INCLUDEPATH += $$OGRE21SDK\\include
 win32:INCLUDEPATH += $$OGRE21SDK\\include\\OGRE
@@ -38,11 +47,8 @@ CONFIG(debug, debug|release) {
 }
     win32:LIBS += opengl32.lib
 
-SOURCES += test.cpp\
-        qogreviewport.cpp \
-    qtogre21.cpp \
-    somecustomwidget.cpp
+SOURCES += $$QTOGRE/qogreviewport.cpp \
+    $$QTOGRE/qtogre21.cpp \
 
-HEADERS  += qogreviewport.h \
-    qtogre21.h \
-    somecustomwidget.h
+HEADERS  += $$QTOGRE/qogreviewport.h \
+    $$QTOGRE/qtogre21.h \
