@@ -19,6 +19,23 @@ Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in
 
 ## How to use
 
+### Easy integration of Ogre2 into a Qt project
+
+```QMake
+# Path to Ogre SDK. You can sue a OGRE_HOME env var if you want. Check QMake documentation about environement variables
+OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
+
+#Path to where the QtOgre project files are. You can use $PWD to get the path of the folder of this .pro
+QTOGRE = $PWD/../../external/Qt5Ogre21/Qt5Ogre21/
+
+#The magic include
+include($$QTOGRE/Qt5Ogre21.pri)
+```
+
+Running on Windows and/or linux easily
+
+### What to do in your code
+
 Create an instance of the QtOgre21 object along side your QApplication. If you don't you can't create QOgreViewport widgets.
 
 The QtOgre21 constructor takes 2 arguments : 
@@ -44,9 +61,5 @@ A viewport is automatically attached to a camera via a basic compositor, and rea
 
 Viewports have 2 important methods : getCamera() and getSmgr(). Everything esle is usable as any Ogre feature. 
 
-## Easy integration of Ogre2 into a Qt project
 
-Setting a variable and including a ".pri" (TODO it's not done yet. You can get the classes and the .pro configs by hand) file in your main .pro and use Qt's own build system (QMake)
-
-Running on Windows and/or linux easily
 
