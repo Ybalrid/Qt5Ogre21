@@ -22,7 +22,7 @@ Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in
 ### Easy integration of Ogre2 into a Qt project
 
 ```QMake
-# Path to Ogre SDK. You can sue a OGRE_HOME env var if you want. Check QMake documentation about environement variables
+# Path to Ogre SDK. You can use a OGRE_HOME env var if you want. Check QMake documentation about environement variables
 OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
 
 #Path to where the QtOgre project files are. You can use $PWD to get the path of the folder of this .pro
