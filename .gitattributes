@@ -1,4 +1,4 @@
 *.glsl linguist-vendored
 *.hlsl linguist-vendored
-*.metal liguist-vendored
+*.metal linguist-vendored
 
