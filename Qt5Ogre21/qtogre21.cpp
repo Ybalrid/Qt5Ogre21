@@ -11,7 +11,8 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     root{ nullptr },
     glContext{ 0 },
     hlmsPath{ HlmsLibraryPath },
-    AALevel{ 8 }
+    AALevel{ 8 },
+    defaultBackgroundColor{0.2f, 0.4f, 0.6f}
 {
     if(self)
         throw std::runtime_error("Cannot instanciate 2 QtOgre21 objects. This is a singleton class.");
@@ -74,7 +75,7 @@ void QtOgre21::createNewScene()
     scenes.push_back(Ogre::Root::getSingleton().createSceneManager(Ogre::ST_GENERIC, threads, Ogre::INSTANCING_CULLING_THREADED));
 }
 
-std::tuple<Ogre::SceneManager *, Ogre::Camera *, Ogre::CompositorWorkspace *, Ogre::IdString>
+QtOgre21::WidgetCreationCallbackTuple
 QtOgre21::WidgetCreatedCallback(Ogre::RenderWindow *virtualWindow, size_t sceneIndex)
 {
     Ogre::SceneManager* smgr{nullptr};
@@ -96,8 +97,8 @@ QtOgre21::WidgetCreatedCallback(Ogre::RenderWindow *virtualWindow, size_t sceneI
     Ogre::String workspaceNameStr {"MyWorkspace" + std::to_string(workspaceCounter)};
     Ogre::IdString workspaceName { workspaceNameStr };
     if(!compositorManager->hasWorkspaceDefinition(workspaceName))
-        compositorManager->createBasicWorkspaceDef(workspaceNameStr, Ogre::ColourValue(0.2f, 0.3f, 0.4f)); //here I set a background color. The thing I would like to change later.
-    auto workspace = compositorManager->addWorkspace(smgr, virtualWindow, camera, workspaceName, true, workspaceCounter++);
+        compositorManager->createBasicWorkspaceDef(workspaceNameStr, defaultBackgroundColor); //here I set a background color. The thing I would like to change later.
+    auto workspace = compositorManager->addWorkspace(smgr, virtualWindow, camera, workspaceName, true, int(workspaceCounter++));
 
     //if(workspaceCounter == 0) declareHlmsLibrary(hlmsPath.c_str());
 
@@ -200,4 +201,9 @@ void QtOgre21::setAALevel(uint8_t AA)
 uint8_t QtOgre21::getAALevel()
 {
     return AALevel;
+}
+
+void QtOgre21::setDefaultBackgroundColor(const Ogre::ColourValue& c)
+{
+    defaultBackgroundColor = c;
 }

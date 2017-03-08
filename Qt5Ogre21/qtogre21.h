@@ -28,6 +28,7 @@ class QtOgre21
 {
 public:
 
+    using WidgetCreationCallbackTuple = std::tuple<Ogre::SceneManager*, Ogre::Camera*, Ogre::CompositorWorkspace*, Ogre::IdString>;
     ///Usable Rendering APIs
     enum class RenderAPI{OpenGL, DirectX11};
 
@@ -53,7 +54,7 @@ public:
     void createNewScene();
 
     ///Method called by each viewport widget when it is showed.
-    std::tuple<Ogre::SceneManager*, Ogre::Camera*, Ogre::CompositorWorkspace*, Ogre::IdString>
+    WidgetCreationCallbackTuple
     WidgetCreatedCallback(Ogre::RenderWindow* virtualWindow, size_t sceneIndex = 0);
 
     ///Methdo called just before creating a window
@@ -76,6 +77,9 @@ public:
 
     ///Get the AA level
     uint8_t getAALevel();
+
+    ///Set the default background color for viewports created after this one:
+    void setDefaultBackgroundColor(const Ogre::ColourValue &c);
 
 private:
 
@@ -114,6 +118,9 @@ private:
 
     ///Path to the HLMS library folder
     std::string hlmsPath;
+
+    ///Defautl background color for new viewports
+    Ogre::ColourValue defaultBackgroundColor;
 
 };
 
