@@ -30,6 +30,7 @@ public:
 
     ///Return the camera used
     Ogre::Camera* getCamera();
+    Ogre::SceneNode* getCameraNode();
 
     ///Return the SceneManager used
     Ogre::SceneManager* getSmgr();
@@ -47,6 +48,7 @@ protected:
 
     ///The Camera
     Ogre::Camera* Camera;
+    Ogre::SceneNode* CameraNode;
 
     ///The SMGR
     Ogre::SceneManager* SceneManager;

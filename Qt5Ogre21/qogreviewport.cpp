@@ -50,10 +50,19 @@ QOgreViewport::QOgreViewport(size_t SceneManagerIndex, QWidget *parent)
     //Configure the camera to a state where it will be able to draw something...
     Camera->setNearClipDistance(0.1f);
     Camera->setFarClipDistance(500);
-    Camera->setPosition(0, 0, 10);
+    Camera->setPosition(0, 0, 0);
     Camera->lookAt(0, 0, 0);
     //Camera->setFOVy(Ogre::Degree(45));
     Camera->setAutoAspectRatio(true);
+
+    Camera->detachFromParent();
+    CameraNode = SceneManager->getRootSceneNode()->createChildSceneNode();
+    CameraNode->attachObject(Camera);
+}
+
+Ogre::SceneNode* QOgreViewport::getCameraNode()
+{
+    return CameraNode;
 }
 
 QOgreViewport::~QOgreViewport()

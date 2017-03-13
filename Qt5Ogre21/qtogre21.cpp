@@ -146,6 +146,7 @@ Ogre::SceneManager* QtOgre21::getScene(size_t index)
 void QtOgre21::declareHlmsLibrary()
 {
     Ogre::String hlmsFolder = hlmsPath;
+    qDebug() << "Loading " << hlmsFolder.c_str() << " as HLMS";
 
     if(hlmsFolder.empty()) hlmsFolder =  "./";
     else if (hlmsFolder[hlmsFolder.size() - 1] != '/') hlmsFolder += "/";
