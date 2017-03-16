@@ -93,11 +93,21 @@ QtOgre21::WidgetCreatedCallback(Ogre::RenderWindow *virtualWindow, size_t sceneI
     Ogre::Camera* camera = smgr->createCamera("MyCamera" + std::to_string(cameraCounter++));
 
     auto compositorManager = root->getCompositorManager2();
-
-    Ogre::String workspaceNameStr {"MyWorkspace" + std::to_string(workspaceCounter)};
-    Ogre::IdString workspaceName { workspaceNameStr };
-    if(!compositorManager->hasWorkspaceDefinition(workspaceName))
+    Ogre::String workspaceNameStr;
+    Ogre::IdString workspaceName;
+    if(customCompositor.empty())
+    {
+        workspaceNameStr = "MyWorkspace" + std::to_string(workspaceCounter);
+        workspaceName = workspaceNameStr;
+        if(!compositorManager->hasWorkspaceDefinition(workspaceName))
         compositorManager->createBasicWorkspaceDef(workspaceNameStr, defaultBackgroundColor); //here I set a background color. The thing I would like to change later.
+    }
+    else
+    {
+        workspaceNameStr = customCompositor;
+        workspaceName = customCompositor;
+    }
+
     auto workspace = compositorManager->addWorkspace(smgr, virtualWindow, camera, workspaceName, true, int(workspaceCounter++));
 
     //if(workspaceCounter == 0) declareHlmsLibrary(hlmsPath.c_str());
@@ -207,4 +217,9 @@ uint8_t QtOgre21::getAALevel()
 void QtOgre21::setDefaultBackgroundColor(const Ogre::ColourValue& c)
 {
     defaultBackgroundColor = c;
+}
+
+void QtOgre21::setCustomCompositor(const Ogre::String &name)
+{
+    customCompositor = name;
 }

@@ -81,7 +81,11 @@ public:
     ///Set the default background color for viewports created after this one:
     void setDefaultBackgroundColor(const Ogre::ColourValue &c);
 
+    void setCustomCompositor(const Ogre::String& name);
+
 private:
+
+    Ogre::String customCompositor;
 
     ///The AA level
     uint8_t AALevel;
