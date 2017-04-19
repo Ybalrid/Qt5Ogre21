@@ -24,6 +24,10 @@
 #include <OGRE/Hlms/Pbs/OgreHlmsPbs.h>
 #include <OGRE/Hlms/Unlit/OgreHlmsUnlit.h>
 
+#ifndef _WIN32
+    using HGLRC = void*;
+#endif
+
 class QtOgre21
 {
 public:

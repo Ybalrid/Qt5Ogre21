@@ -32,7 +32,7 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
 
 
 
-    Ogre::RenderSystem* renderSystem;
+    Ogre::RenderSystem* renderSystem{nullptr};
 
     //Register the HLMS
     switch(API)
@@ -40,9 +40,9 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     case RenderAPI::OpenGL:
         qDebug() << "Rendering with OpenGL. Will use GLSL shaders";
 #ifdef QT_DEBUG
-        root->loadPlugin("RenderSystem_GL3Plus_d");
+        root->loadPlugin("./RenderSystem_GL3Plus_d");
 #else
-        root->loadPlugin("RenderSystem_GL3Plus");
+        root->loadPlugin("./RenderSystem_GL3Plus");
 #endif
         renderSystem = root->getRenderSystemByName(GL3PLUS_RENDERSYSTEM);
         shadingLanguage = "GLSL";
@@ -50,9 +50,9 @@ QtOgre21::QtOgre21(RenderAPI API, Ogre::String HlmsLibraryPath) :
     case RenderAPI::DirectX11:
         qDebug() << "Rendering with DirectX11. Will use HLSL shaders";
 #ifdef QT_DEBUG
-        root->loadPlugin("RenderSystem_DX11_d");
+        root->loadPlugin("./RenderSystem_DX11_d");
 #else
-        root->loadPlugin("RenderSystem_DX11");
+        root->loadPlugin("./RenderSystem_DX11");
 #endif
         renderSystem = root->getRenderSystemByName(DIREXTX11_RENDERSYSTEM);
         shadingLanguage = "HLSL";
