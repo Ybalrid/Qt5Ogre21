@@ -26,7 +26,7 @@ Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in
 OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
 
 #Path to where the QtOgre project files are. You can use $PWD to get the path of the folder of this .pro
-QTOGRE = $PWD/../../external/Qt5Ogre21/Qt5Ogre21/
+QTOGRE = $${PWD}/../external/Qt5Ogre21/Qt5Ogre21/
 
 #The magic include
 include($$QTOGRE/Qt5Ogre21.pri)
