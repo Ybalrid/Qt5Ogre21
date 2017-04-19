@@ -87,6 +87,10 @@ void QOgreViewport::resizeEvent(QResizeEvent *event)
     if(event->isAccepted())
     {
         Window->windowMovedOrResized();
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+        //Need to override the actual size of the window, for some reason. Only on Linux.
+        Window->resize(width(), height());
+#endif
         this->update();
     }
 }
