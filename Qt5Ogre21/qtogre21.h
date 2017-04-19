@@ -24,6 +24,7 @@
 #include <OGRE/Hlms/Pbs/OgreHlmsPbs.h>
 #include <OGRE/Hlms/Unlit/OgreHlmsUnlit.h>
 
+//Necessary on Non windows platform :
 #ifndef _WIN32
     using HGLRC = void*;
 #endif
@@ -85,6 +86,7 @@ public:
     ///Set the default background color for viewports created after this one:
     void setDefaultBackgroundColor(const Ogre::ColourValue &c);
 
+    ///Set the name of a compositor to use. You are responsible for actually loading that compositor resources
     void setCustomCompositor(const Ogre::String& name);
 
 private:
