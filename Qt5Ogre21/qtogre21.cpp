@@ -166,12 +166,21 @@ void QtOgre21::declareHlmsLibrary()
     //Define the shader library to use for HLMS
     auto library = Ogre::ArchiveVec();
     auto archiveLibrary = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Common/" + shadingLanguage, "FileSystem", true);
+    auto archiveLibraryAny = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Common/Any", "FileSystem", true);
     library.push_back(archiveLibrary);
+    library.push_back(archiveLibraryAny);
+
+    auto archiveUnlitAny = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Unlit/Any", "FileSystem", true);
+    auto archivePbsAny = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Pbs/Any", "FileSystem", true);
 
     //Define "unlit" and "PBS" (physics based shader) HLMS
     auto archiveUnlit = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Unlit/" + shadingLanguage, "FileSystem", true);
     auto archivePbs = Ogre::ArchiveManager::getSingleton().load(hlmsFolder + "Hlms/Pbs/" + shadingLanguage, "FileSystem", true);
+
+    library.push_back(archiveUnlitAny);
     auto hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit, &library);
+    library.pop_back();
+    library.push_back(archivePbsAny);
     auto hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &library);
     hlmsManager->registerHlms(hlmsUnlit);
     hlmsManager->registerHlms(hlmsPbs);
