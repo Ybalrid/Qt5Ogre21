@@ -1,10 +1,16 @@
 @property( hlms_forwardplus )
+@property( hlms_forwardplus_fine_light_mask )
+	@piece( andObjLightMaskFwdPlusCmp )&& ((objLightMask & floatBitsToUint( lightDiffuse.w )) != 0u)@end
+@end
 @piece( forward3dLighting )
+	@property( hlms_forwardplus_fine_light_mask && !hlms_fine_light_mask )
+		uint objLightMask = instance.worldMaterialIdx[inPs.drawId].z;
+	@end
 	@property( hlms_forwardplus == forward3d )
-		float f3dMinDistance	= pass.f3dData.x;
-		float f3dInvMaxDistance	= pass.f3dData.y;
-		float f3dNumSlicesSub1	= pass.f3dData.z;
-		uint cellsPerTableOnGrid0= floatBitsToUint( pass.f3dData.w );
+		float f3dMinDistance	= passBuf.f3dData.x;
+		float f3dInvMaxDistance	= passBuf.f3dData.y;
+		float f3dNumSlicesSub1	= passBuf.f3dData.z;
+		uint cellsPerTableOnGrid0= floatBitsToUint( passBuf.f3dData.w );
 
 		// See C++'s Forward3D::getSliceAtDepth
 		/*float fSlice = 1.0 - clamp( (-inPs.pos.z + f3dMinDistance) * f3dInvMaxDistance, 0.0, 1.0 );
@@ -18,26 +24,26 @@
 		//TODO: Profile performance: derive this mathematically or use a lookup table?
 		uint offset = cellsPerTableOnGrid0 * (((1u << (slice << 1u)) - 1u) / 3u);
 
-		float lightsPerCell = pass.f3dGridHWW[0].w;
+		float lightsPerCell = passBuf.f3dGridHWW[0].w;
 
-		//pass.f3dGridHWW[slice].x = grid_width / renderTarget->width;
-		//pass.f3dGridHWW[slice].y = grid_height / renderTarget->height;
-		//pass.f3dGridHWW[slice].z = grid_width * lightsPerCell;
+		//passBuf.f3dGridHWW[slice].x = grid_width / renderTarget->width;
+		//passBuf.f3dGridHWW[slice].y = grid_height / renderTarget->height;
+		//passBuf.f3dGridHWW[slice].z = grid_width * lightsPerCell;
 		//uint sampleOffset = 0;
 		@property( hlms_forwardplus_flipY )
-			float windowHeight = pass.f3dGridHWW[1].w; //renderTarget->height
+			float windowHeight = passBuf.f3dGridHWW[1].w; //renderTarget->height
 			uint sampleOffset = offset +
-								uint(floor( (windowHeight - gl_FragCoord.y) * pass.f3dGridHWW[slice].y ) * pass.f3dGridHWW[slice].z) +
-								uint(floor( gl_FragCoord.x * pass.f3dGridHWW[slice].x ) * lightsPerCell);
+								uint(floor( (windowHeight - gl_FragCoord.y) * passBuf.f3dGridHWW[slice].y ) * passBuf.f3dGridHWW[slice].z) +
+								uint(floor( gl_FragCoord.x * passBuf.f3dGridHWW[slice].x ) * lightsPerCell);
 		@end @property( !hlms_forwardplus_flipY )
 			uint sampleOffset = offset +
-								uint(floor( gl_FragCoord.y * pass.f3dGridHWW[slice].y ) * pass.f3dGridHWW[slice].z) +
-								uint(floor( gl_FragCoord.x * pass.f3dGridHWW[slice].x ) * lightsPerCell);
+								uint(floor( gl_FragCoord.y * passBuf.f3dGridHWW[slice].y ) * passBuf.f3dGridHWW[slice].z) +
+								uint(floor( gl_FragCoord.x * passBuf.f3dGridHWW[slice].x ) * lightsPerCell);
 		@end
 	@end @property( hlms_forwardplus != forward3d )
-		float f3dMinDistance	= pass.f3dData.x;
-		float f3dInvExponentK	= pass.f3dData.y;
-		float f3dNumSlicesSub1	= pass.f3dData.z;
+		float f3dMinDistance	= passBuf.f3dData.x;
+		float f3dInvExponentK	= passBuf.f3dData.y;
+		float f3dNumSlicesSub1	= passBuf.f3dData.z;
 
 		// See C++'s ForwardClustered::getSliceAtDepth
 		float fSlice = log2( max( -inPs.pos.z - f3dMinDistance, 1 ) ) * f3dInvExponentK;
@@ -45,13 +51,13 @@
 		uint sliceSkip = uint( fSlice * @value( fwd_clustered_width_x_height ) );
 
 		uint sampleOffset = sliceSkip +
-							uint(floor( gl_FragCoord.x * pass.fwdScreenToGrid.x ));
+							uint(floor( gl_FragCoord.x * passBuf.fwdScreenToGrid.x ));
 		@property( hlms_forwardplus_flipY )
-			float windowHeight = pass.f3dData.w; //renderTarget->height
-			sampleOffset += uint(floor( (windowHeight - gl_FragCoord.y) * pass.fwdScreenToGrid.y ) *
+			float windowHeight = passBuf.f3dData.w; //renderTarget->height
+			sampleOffset += uint(floor( (windowHeight - gl_FragCoord.y) * passBuf.fwdScreenToGrid.y ) *
 								 @value( fwd_clustered_width ));
 		@end @property( !hlms_forwardplus_flipY )
-			sampleOffset += uint(floor( gl_FragCoord.y * pass.fwdScreenToGrid.y ) *
+			sampleOffset += uint(floor( gl_FragCoord.y * passBuf.fwdScreenToGrid.y ) *
 								 @value( fwd_clustered_width ));
 		@end
 
@@ -70,14 +76,18 @@
 		//Get the light
 		vec4 posAndType = texelFetch( f3dLightList, int(idx) );
 
+	@property( !hlms_forwardplus_fine_light_mask )
 		vec3 lightDiffuse	= texelFetch( f3dLightList, int(idx + 1u) ).xyz;
+	@end @property( hlms_forwardplus_fine_light_mask )
+		vec4 lightDiffuse	= texelFetch( f3dLightList, int(idx + 1u) ).xyzw;
+	@end
 		vec3 lightSpecular	= texelFetch( f3dLightList, int(idx + 2u) ).xyz;
 		vec4 attenuation	= texelFetch( f3dLightList, int(idx + 3u) ).xyzw;
 
 		vec3 lightDir	= posAndType.xyz - inPs.pos;
 		float fDistance	= length( lightDir );
 
-		if( fDistance <= attenuation.x )
+		if( fDistance <= attenuation.x @insertpiece( andObjLightMaskFwdPlusCmp ) )
 		{
 			lightDir *= 1.0 / fDistance;
 			float atten = 1.0 / (0.5 + (attenuation.y + attenuation.z * fDistance) * fDistance );
@@ -86,7 +96,7 @@
 			@end
 
 			//Point light
-			vec3 tmpColour = BRDF( lightDir, viewDir, NdotV, lightDiffuse, lightSpecular );
+			vec3 tmpColour = BRDF( lightDir, viewDir, NdotV, lightDiffuse.xyz, lightSpecular );
 			finalColour += tmpColour * atten;
 		}
 	}
@@ -104,7 +114,11 @@
 		//Get the light
 		vec4 posAndType = texelFetch( f3dLightList, int(idx) );
 
+	@property( !hlms_forwardplus_fine_light_mask )
 		vec3 lightDiffuse	= texelFetch( f3dLightList, int(idx + 1u) ).xyz;
+	@end @property( hlms_forwardplus_fine_light_mask )
+		vec4 lightDiffuse	= texelFetch( f3dLightList, int(idx + 1u) ).xyzw;
+	@end
 		vec3 lightSpecular	= texelFetch( f3dLightList, int(idx + 2u) ).xyz;
 		vec4 attenuation	= texelFetch( f3dLightList, int(idx + 3u) ).xyzw;
 		vec3 spotDirection	= texelFetch( f3dLightList, int(idx + 4u) ).xyz;
@@ -113,7 +127,7 @@
 		vec3 lightDir	= posAndType.xyz - inPs.pos;
 		float fDistance	= length( lightDir );
 
-		if( fDistance <= attenuation.x )
+		if( fDistance <= attenuation.x @insertpiece( andObjLightMaskFwdPlusCmp ) )
 		{
 			lightDir *= 1.0 / fDistance;
 			float atten = 1.0 / (0.5 + (attenuation.y + attenuation.z * fDistance) * fDistance );
@@ -134,7 +148,7 @@
 
 			if( spotCosAngle >= spotParams.y )
 			{
-				vec3 tmpColour = BRDF( lightDir, viewDir, NdotV, lightDiffuse, lightSpecular );
+				vec3 tmpColour = BRDF( lightDir, viewDir, NdotV, lightDiffuse.xyz, lightSpecular );
 				finalColour += tmpColour * atten;
 			}
 		}
@@ -179,7 +193,7 @@
 
 	@property( hlms_forwardplus_debug )
 		@property( hlms_forwardplus == forward3d )
-			float occupancy = (totalNumLightsInGrid / pass.f3dGridHWW[0].w);
+			float occupancy = (totalNumLightsInGrid / passBuf.f3dGridHWW[0].w);
 		@end @property( hlms_forwardplus != forward3d )
 			float occupancy = (totalNumLightsInGrid / float( @value( fwd_clustered_lights_per_cell ) ));
 		@end

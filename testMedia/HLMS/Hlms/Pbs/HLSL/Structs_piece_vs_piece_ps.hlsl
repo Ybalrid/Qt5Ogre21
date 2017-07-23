@@ -2,6 +2,9 @@
 struct ShadowReceiverData
 {
 	float4x4 texViewProj;
+@property( exponential_shadow_maps )
+	float4 texViewZRow;
+@end
 	float2 shadowDepthRange;
 	float2 padding;
 	float4 invShadowMapSize;
@@ -9,10 +12,10 @@ struct ShadowReceiverData
 
 struct Light
 {
-	float3 position;
+	float4 position; //.w contains the objLightMask
 	float3 diffuse;
 	float3 specular;
-@property( hlms_num_shadow_maps )
+@property( hlms_num_shadow_map_lights )
 	float3 attenuation;
 	float3 spotDirection;
 	float3 spotParams;
@@ -29,16 +32,28 @@ cbuffer PassBuffer : register(b0)
 	//Vertex shader (common to both receiver and casters)
 	float4x4 viewProj;
 
+@property( hlms_global_clip_distances )
+	float4 clipPlane0;
+@end
+
+@property( hlms_shadowcaster_point )
+	float4 cameraPosWS;	//Camera position in world space
+@end
+
 @property( !hlms_shadowcaster )
 	//Vertex shader
 	float4x4 view;
-	@property( hlms_num_shadow_maps )ShadowReceiverData shadowRcv[@value(hlms_num_shadow_maps)];@end
+	@property( hlms_num_shadow_map_lights )ShadowReceiverData shadowRcv[@value(hlms_num_shadow_map_lights)];@end
 
 	//-------------------------------------------------------------------------
 
 	//Pixel shader
 	float3x3 invViewMatCubemap;
 	float padding; //Compatibility with GLSL.
+
+@property( hlms_use_prepass )
+	float4 windowHeight;
+@end
 	
 @property( ambient_hemisphere || ambient_fixed || envmap_scale )
 	float4 ambientUpperHemi;
@@ -57,6 +72,7 @@ cbuffer PassBuffer : register(b0)
 	@property( hlms_lights_spot )Light lights[@value(hlms_lights_spot)];@end
 @end @property( hlms_shadowcaster )
 	//Vertex shader
+	@property( exponential_shadow_maps )float4 viewZRow;@end
 	float2 depthRange;
 @end
 
@@ -80,6 +96,8 @@ cbuffer PassBuffer : register(b0)
 		float4 fwdScreenToGrid;
 	@end
 @end
+
+	@insertpiece( DeclPlanarReflUniforms )
 
 @property( parallax_correct_cubemaps )
 	CubemapProbe autoProbe;
@@ -118,7 +136,7 @@ struct Material
 
 cbuffer MaterialBuf : register(b1)
 {
-	Material materialArray[@insertpiece( materials_per_buffer )];
+	Material materialArray[@value( materials_per_buffer )];
 };
 @end
 
@@ -135,7 +153,11 @@ cbuffer InstanceBuffer : register(b2)
     //shadowConstantBias. Send the bias directly to avoid an
     //unnecessary indirection during the shadow mapping pass.
     //Must be loaded with uintBitsToFloat
-	uint4 worldMaterialIdx[4096];
+	@property( fast_shader_build_hack )
+		uint4 worldMaterialIdx[2];
+	@end @property( !fast_shader_build_hack )
+		uint4 worldMaterialIdx[4096];
+	@end
 };
 @end
 
@@ -166,10 +188,15 @@ cbuffer ManualProbe : register(b3)
 		@foreach( hlms_uv_count, n )
 			float@value( hlms_uv_count@n ) uv@n	: TEXCOORD@counter(texcoord);@end
 
-		@foreach( hlms_num_shadow_maps, n )
-			float4 posL@n	: TEXCOORD@counter(texcoord);@end
+		@foreach( hlms_num_shadow_map_lights, n )
+			@property( !hlms_shadowmap@n_is_point_light )
+				float4 posL@n	: TEXCOORD@counter(texcoord);@end @end
 			
 		@property( hlms_pssm_splits )float depth	: TEXCOORD@counter(texcoord);@end
+
+		@property( hlms_use_prepass_msaa > 1 )
+			float2 zwDepth	: TEXCOORD@counter(texcoord);
+		@end
 	@end
 	
 	@property( hlms_shadowcaster )
@@ -178,8 +205,14 @@ cbuffer ManualProbe : register(b3)
 			@foreach( hlms_uv_count, n )
 				float@value( hlms_uv_count@n ) uv@n	: TEXCOORD@counter(texcoord);@end
 		@end
-		@property( !hlms_shadow_uses_depth_texture )
+		@property( (!hlms_shadow_uses_depth_texture || exponential_shadow_maps) && !hlms_shadowcaster_point )
 			float depth	: TEXCOORD@counter(texcoord);
+		@end
+		@property( hlms_shadowcaster_point )
+			float3 toCameraWS	: TEXCOORD@counter(texcoord);
+			@property( !exponential_shadow_maps )
+				nointerpolation float constBias	: TEXCOORD@counter(texcoord);
+			@end
 		@end
 	@end
 

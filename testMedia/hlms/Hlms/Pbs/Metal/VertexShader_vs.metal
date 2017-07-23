@@ -34,6 +34,9 @@ struct PS_INPUT
 {
 @insertpiece( VStoPS_block )
 	float4 gl_Position [[position]];
+@property( hlms_global_clip_distances )
+	float gl_ClipDistance0 [[clip_distance]];
+@end
 };
 
 // START UNIFORM STRUCT DECLARATION
@@ -109,7 +112,7 @@ struct PS_INPUT
 @end @end  //SkeletonTransform // !hlms_skeleton
 
 @property( hlms_skeleton )
-	@piece( worldViewMat )pass.view@end
+	@piece( worldViewMat )passBuf.view@end
 @end @property( !hlms_skeleton )
 	@piece( worldViewMat )worldView@end
 @end
@@ -123,7 +126,7 @@ struct PS_INPUT
 	@property( hlms_normal || hlms_qtangent )outVs.normal	= @insertpiece(local_normal) * mat3x3;@end
 	@property( normal_map )outVs.tangent	= @insertpiece(local_tangent) * mat3x3;@end
 @property( !hlms_dual_paraboloid_mapping )
-	outVs.gl_Position = worldPos * pass.viewProj;@end
+	outVs.gl_Position = worldPos * passBuf.viewProj;@end
 @property( hlms_dual_paraboloid_mapping )
 	//Dual Paraboloid Mapping
 	outVs.gl_Position.w	= 1.0f;
@@ -133,10 +136,6 @@ struct PS_INPUT
 	outVs.gl_Position.z	+= 1.0f;
 	outVs.gl_Position.xy	/= outVs.gl_Position.z;
 	outVs.gl_Position.z	= (L - NearPlane) / (FarPlane - NearPlane);@end
-@end
-@piece( ShadowReceive )
-@foreach( hlms_num_shadow_maps, n )
-	outVs.posL@n = float4(worldPos.xyz, 1.0f) * pass.shadowRcv[@n].texViewProj;@end
 @end
 
 vertex PS_INPUT main_metal
@@ -186,26 +185,8 @@ vertex PS_INPUT main_metal
 	@insertpiece( SkeletonTransform )
 	@insertpiece( VertexTransform )
 
-@property( !hlms_shadowcaster )
-	@insertpiece( ShadowReceive )
-@foreach( hlms_num_shadow_maps, n )
-	outVs.posL@n.z = outVs.posL@n.z * pass.shadowRcv[@n].shadowDepthRange.y;@end
-
-@property( hlms_pssm_splits )	outVs.depth = outVs.gl_Position.z;@end
-
-@end @property( hlms_shadowcaster )
-	float shadowConstantBias = as_type<float>( worldMaterialIdx[drawId].y );
-
-	@property( !hlms_shadow_uses_depth_texture )
-		//Linear depth
-		outVs.depth	= (outVs.gl_Position.z + shadowConstantBias * pass.depthRange.y) * pass.depthRange.y;
-	@end
-
-	//We can't make the depth buffer linear without Z out in the fragment shader;
-	//however we can use a cheap approximation ("pseudo linear depth")
-	//see http://www.yosoygames.com.ar/wp/2014/01/linear-depth-buffer-my-ass/
-	outVs.gl_Position.z = (outVs.gl_Position.z + shadowConstantBias * pass.depthRange.y) * pass.depthRange.y * outVs.gl_Position.w;
-@end
+	@insertpiece( DoShadowReceiveVS )
+	@insertpiece( DoShadowCasterVS )
 
 	/// hlms_uv_count will be 0 on shadow caster passes w/out alpha test
 @foreach( hlms_uv_count, n )
@@ -213,6 +194,16 @@ vertex PS_INPUT main_metal
 
 @property( (!hlms_shadowcaster || alpha_test) && !lower_gpu_overhead )
 	outVs.materialId = worldMaterialIdx[drawId].x & 0x1FFu;@end
+
+@property( hlms_fine_light_mask || hlms_forwardplus_fine_light_mask )
+	outVs.objLightMask = worldMaterialIdx[drawId].z;@end
+
+@property( use_planar_reflections )
+	outVs.planarReflectionIdx = (ushort)(worldMaterialIdx[drawId].w);@end
+
+@property( hlms_global_clip_distances )
+	outVs.gl_ClipDistance0 = dot( float4( worldPos.xyz, 1.0 ), passBuf.clipPlane0.xyzw );
+@end
 
 	@insertpiece( custom_vs_posExecution )
 
