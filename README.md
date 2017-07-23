@@ -21,6 +21,8 @@ Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in
 
 ### Easy integration of Ogre2 into a Qt project
 
+This small library is suitable to be put inside your project via [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+
 ```QMake
 # Path to Ogre SDK. You can use a OGRE_HOME env var if you want. Check QMake documentation about environement variables
 OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
