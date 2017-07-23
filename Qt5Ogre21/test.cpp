@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     qtOgre.declareHlmsLibrary();
 
     //Initialize the resources
-    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(true);
 
     //Setup 1st scene (that is in 1st widget
     auto scene = qtOgre.getScene(0);

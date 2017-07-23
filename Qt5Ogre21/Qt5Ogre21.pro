@@ -13,7 +13,7 @@ TEMPLATE = app
 CONFIG += c++14 precompile_header
 
 #VARIABLE TO BE SET BY THE USER WITH PATH TO THE OGRE SDK
-OGRE21SDK = "C:\YbalridSoftware\Ogre21\build\sdk"
+OGRE21SDK = "C:\Users\arthu\ogre\build\sdk"
 
 OGRELIBPATH = $$OGRE21SDK\\lib\\
 
