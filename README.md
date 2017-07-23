@@ -49,6 +49,36 @@ This object is a singleton class, you can access it via calling `QtOgre21::insta
 
 Use QOgreViewport widgets as any other widget in Qt. You can have different scenes. Creating a new scene is done via the QtOgre21 object.
 
+```C++
+int main(int argc, char *argv[])
+{
+    //Initialize the Qt Application
+    QApplication a(argc, argv);
+
+    //Initialize the QtOgre system
+    QtOgre21 qtOgre(QtOgre21::RenderAPI::OpenGL);
+    
+    //Here you can create widget with viewports (this is actually needed for initializing the rendering API) 
+    //and .show() them!
+    
+    //Resource locations
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(".", "FileSystem");
+
+    //HighLevelMaterialSystem shader libraries
+    qtOgre.declareHlmsLibrary();
+
+    //Initialize the resources
+    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(true);
+    
+    //get the scene manager
+    auto scene = qtOgre.getScene(0);
+    
+    //here you can do whatever you would do with an Ogre::SceneManager
+    
+    return a.exec()
+}
+```
+
 More explicitely: When creating a first QOgreViewport the 1st time, Ogre will finish the RenderSystem intialization, has it needs a "window" object existing to setup the rendering pipeline.
 
 Also, when doing that, it will create a first scene manager that will be the default one. 
