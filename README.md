@@ -1,16 +1,16 @@
 # Qt5Ogre21
 Qt 5 integration of Ogre 2.1
 
-Need a C++11 complient compier. Currently only tested with Visual Studio 2015 
+You will need a C++11 complient compier. This code was tested with Visual Studio 2015 on Windows, and with GCC 7 on Linux. 
 
 ![Screenshot](/Screenshot.png)
 
 The goal is to have multiple viewports of Ogre either running separate or multiple different scenes.
 
 Design idea
-  - Initialization of Ogre Root object, and of the HLMS with lifetime tied to a sigle object
-  - Integration of Qt events with Ogre
-  - a QOgreViewport widget class containing an Ogre "external render window"
+  - Initialization of Ogre Root object, and of the HLMS with lifetime tied to a sigle singleton object
+  - Integration of Qt window events with Ogre
+  - a QOgreViewport widget class containing an Ogre "external render window", but behave as a simple window. 
   - Possibility to refresh the viewport at repaint, or at a "user chosen" framerate (30, 60fps)
   
 *this project is not intended to render games, but to provide an usefull utility for integrating a 3D view to a desktop application, like an editor*
@@ -19,9 +19,11 @@ Since Ogre2 is fairly new, some Ogre1->Ogre2 transition facilities have to be in
 
 ## How to use
 
-### Easy integration of Ogre2 into a Qt project
+### Easy integration of Ogre2 into a Qt project via QMake
 
 This small library is suitable to be put inside your project via [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules)
+
+Here's what you need to add to the `.pro` file of your application. You just need to specify where Ogre is installed, and the relative path between your project and the folder containing the `.pri` of Qt5Ogre21.
 
 ```QMake
 # Path to Ogre SDK. You can use a OGRE_HOME env var if you want. Check QMake documentation about environement variables
@@ -33,8 +35,6 @@ QTOGRE = $${PWD}/../external/Qt5Ogre21/Qt5Ogre21/
 #The magic include
 include($$QTOGRE/Qt5Ogre21.pri)
 ```
-
-Running on Windows and/or linux easily
 
 ### What to do in your code
 
@@ -48,6 +48,8 @@ The QtOgre21 constructor takes 2 arguments :
 This object is a singleton class, you can access it via calling `QtOgre21::instance()`
 
 Use QOgreViewport widgets as any other widget in Qt. You can have different scenes. Creating a new scene is done via the QtOgre21 object.
+
+If you want to do that in your `main()` it would look a little like this:
 
 ```C++
 int main(int argc, char *argv[])
@@ -79,9 +81,9 @@ int main(int argc, char *argv[])
 }
 ```
 
-More explicitely: When creating a first QOgreViewport the 1st time, Ogre will finish the RenderSystem intialization, has it needs a "window" object existing to setup the rendering pipeline.
+More explicitely: When creating a first QOgreViewport the 1st time, Ogre will finish the RenderSystem intialization, because it needs a "window" object existing to setup the rendering pipeline. (For Ogre it's "a window" but for you it's just a Qt widget.)
 
-Also, when doing that, it will create a first scene manager that will be the default one. 
+Also, when doing that, it will create a first scene manager that will serve as the default one. 
 
 An additional scene can be created when calling `QtOgre21::instance()->createNewScene();`. QtOgre21 store them as an array, and you will be able to get the scene by their index. 
 
@@ -89,9 +91,9 @@ The default scene is index `0`, the 1st additional one is `1`, etc...
 
 When calling the QOgreViewport constructor, you can specify a "scene manager index" as an argument, when doing this, it will render that scene. 
 
-A viewport is automatically attached to a camera via a basic compositor, and ready to render. I'm planning to add a way to specify a compositor to use, but it's not done yet.
+A viewport is automatically attached to a camera via an Ogre2.1 "basic" compositor, and ready to render. I'm planning to add a way to specify a compositor to use, but it's not done yet. For now this is suitable for all your classic rendering needs without post-processing (Donw worry, Anti Aliasing *is* supported)
 
-Viewports have 2 important methods : getCamera() and getSmgr(). Everything esle is usable as any Ogre feature. 
+Viewports have 2 important methods for you : getCamera() and getSmgr(). Everything esle is usable as any Ogre feature. For everything else, they behave just like bare QWidgets. 
 
 
 
