@@ -22,6 +22,8 @@ OGRELIBPATH = $$OGRE21SDK\\lib\\
 
 win32:INCLUDEPATH += $$OGRE21SDK\\include
 win32:INCLUDEPATH += $$OGRE21SDK\\include\\OGRE
+linux:INCLUDEPATH += /usr/local/include/OGRE
+linux:LIBS += -L/usr/local/lib
 
 CONFIG(debug, debug|release) {
     win32:LIBS += $$OGRELIBPATH\\debug\\OgreMain_d.lib
@@ -29,12 +31,26 @@ CONFIG(debug, debug|release) {
     win32:LIBS += $$OGRELIBPATH\\debug\\OgreMeshLodGenerator_d.lib
     win32:LIBS += $$OGRELIBPATH\\debug\\OgreHlmsPbs_d.lib
     win32:LIBS += $$OGRELIBPATH\\debug\\OgreHlmsUnlit_d.lib
+
+    linux:LIBS += -lOgreMain_d
+    linux:LIBS += -lOgreOverlay_d
+    linux:LIBS += -lOgreMeshLodGenerator_d
+    linux:LIBS += -lOgreHlmsPbs_d
+    linux:LIBS += -lOgreHlmsUnlit_d
+
 } else {
     win32:LIBS += $$OGRELIBPATH\\release\\OgreMain.lib
     win32:LIBS += $$OGRELIBPATH\\release\\OgreOverlay.lib
     win32:LIBS += $$OGRELIBPATH\\release\\OgreMeshLodGenerator.lib
     win32:LIBS += $$OGRELIBPATH\\release\\OgreHlmsPbs.lib
     win32:LIBS += $$OGRELIBPATH\\release\\OgreHlmsUnlit.lib
+
+    linux:LIBS += -lOgreMain
+    linux:LIBS += -lOgreOverlay
+    linux:LIBS += -lOgreMeshLodGenerator
+    linux:LIBS += -lOgreHlmsPbs
+    linux:LIBS += -lOgreHlmsUnlit
+
 }
     win32:LIBS += opengl32.lib
 
